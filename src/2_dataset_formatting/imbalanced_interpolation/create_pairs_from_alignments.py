@@ -7,51 +7,47 @@ import numpy as np
 import os
 import pandas as pd
 from pathlib import Path
-import re
 import traceback
 from tqdm import tqdm
 
 
-logger = logging.getLogger("no_interpolation_ds")
+logger = logging.getLogger("imbalanced_interpolation_ds")
 
 
-def read_genus_alignments(
-    raw_files_dir: str, species_info_dir: str, genus: str
-) -> pd.DataFrame:
+def read_genus_alignments(raw_files_dir: str, genus: str) -> pd.DataFrame:
     """
     Reads samples from alignment files and stores them inside a dataframe
 
     Args:
         raw_files_dir: Directory where raw alignment files are stored
-        species_info_dir: Directory where files with species information are stored
         genus: The current genus to be processed
 
     Returns:
-    A dataframe with samples read from the alignment files
+        A dataframe with samples read from the alignment files
     """
     recs = []
+
+    reduced_alns = [
+        Path(aln_f).stem.split(".")[0]
+        for aln_f in glob(f"{raw_files_dir}/alignments/*")
+        if ".reduced" in aln_f
+    ]
 
     logger.info(
         f"Dataset size info: {genus}, {len(glob(f'{raw_files_dir}/alignments/*.fas*'))}"
     )
-    for aln_f in glob(f"{raw_files_dir}/alignments/*"):
-        if ".reduced" in aln_f or "raxml.log" in aln_f:
-            continue
-
-        if "reduced" in aln_f and genus != "Dactylorhiza":
-            logger.info(f"reduced in {genus} {aln_f}")
-
-        gene_id = Path(aln_f).stem
-        if genus in ["Dactylorhiza", "Lomatium", "Palaquium"]:
-            pass
-        elif genus == "Pterocarpus":
-            gene_id = gene_id.replace("_supercontig", "")
+    for _, aln_f in enumerate(glob(f"{raw_files_dir}/alignments/*")):
+        if ".reduced" not in aln_f:
+            gene_id = Path(aln_f).stem
+            if gene_id in reduced_alns:
+                continue
+            alignment_format = "fasta"
         else:
-            logger.info(f"Do not know {genus}")
-            raise Exception(f"Do not know {genus}")
+            gene_id = Path(aln_f).stem.split(".")[0]
+            alignment_format = "phylip-relaxed"
 
         try:
-            msa = AlignIO.read(aln_f, "fasta")
+            msa = AlignIO.read(aln_f, alignment_format)
             if len(msa) <= 1:
                 continue
             for record in msa:
@@ -68,36 +64,20 @@ def read_genus_alignments(
     recs = pd.DataFrame.from_records(
         recs, columns=["genus", "gene_id", "individual_id", "seq"]
     )
-
-    # merge with species + country info
-    species_info = pd.read_csv(
-        f"{species_info_dir}/{genus}.csv", header=0, engine="pyarrow"
-    )
-    if genus == "Pterocarpus":
-        # correct Pterocarpus fasta names for merging with species/country info
-        recs["individual_id"] = recs["individual_id"].str.replace(
-            r"^_R_", "", regex=True
-        )
-
-    recs = pd.merge(recs, species_info, how="left", on="individual_id")
-    recs.loc[recs["species"].isna(), "species"] = "outgroup"
     return recs
 
 
-def read_distances(
-    alignment_dir: str, genus: str, gene_id: str
-) -> pd.DataFrame:
+def read_distances(alignment_dir: str, genus: str, gene_id: str) -> pd.DataFrame:
     """
     Reads distance file of a given alignment
 
     Args:
-        alignment_dir: Parent directory of RAxML folder (alignment_dir > RAxML > distance files)
+        alignment_dir: Parent directory of subset (alignment_dir > subset > RAxML > distance files)
         genus: The current genus to process
         gene_id: The ID of the gene to process
 
     Returns:
-    :return: A dataframe with combined samples and dsitances
-    :rtype: DataFrame
+        A dataframe with combined samples and distances
     """
     distance_f = f"{alignment_dir}/RAxML/RAxML_distances.{gene_id}"
     distances = pd.read_csv(distance_f, header=None, sep="\t")
@@ -119,8 +99,8 @@ def merge_raxml(sub_recs: pd.DataFrame, alignment_dir: str, genus: str) -> pd.Da
     Merges distances read from RAxML file with combined sample information
 
     Args:
-        sub_recs: A subset of the sample dataframe containing samples from one locus (grouped, i.e., with name and dataframe)
-        alignment_dir: Parent directory of RAxML folder (alignment_dir > RAxML > distance files)
+        sub_recs: A subset of the sample dataframe containing samples from one locus
+        alignment_dir: Parent directory of subset (alignment_dir > subset > RAxML > distance files)
         genus: The current genus to process
 
     Returns:
@@ -135,34 +115,50 @@ def merge_raxml(sub_recs: pd.DataFrame, alignment_dir: str, genus: str) -> pd.Da
         logger.info(f"RAxML file error with {genus} {gene_id}")
         return sub_recs
 
-    try:
-        # merge anchor_id
-        pairs = pd.merge(
-            distances, sub_recs, how="inner", left_on="A", right_on="individual_id"
-        )
-        # merge complement_id
-        pairs = pd.merge(
-            pairs,
-            sub_recs.drop(columns=["country", "gene_id", "genus"]),
-            how="inner",
-            left_on="B",
-            right_on="individual_id",
-            suffixes=("_anchor", "_complement"),
-        )
-        # pruning
-        pairs.drop(columns=["A", "B"], inplace=True)
-        pairs.rename(
-            columns={
-                "val": "distance",
-                "individual_id_anchor": "anchor_id",
-                "individual_id_complement": "complement_id",
-            },
-            inplace=True,
-        )
-        return pairs
-    except Exception:
-        logger.info(f"RAxML file error with {genus}, {gene_id}")
-        raise Exception(f"RAxML file error with {genus}, {gene_id}")
+    distances = distances[
+        (distances["A"].isin(sub_recs["individual_id"]))
+        & (distances["B"].isin(sub_recs["individual_id"]))
+    ].copy()
+    distances["aug"] = (distances["A"].str.contains("_aug")) | (
+        distances["B"].str.contains("_aug")
+    )
+    distances_original = distances[~distances["aug"]]
+    distances_aug = distances[distances["aug"]]
+    max_recs = 40_000 - len(distances_original.index)
+    distances_aug = distances_aug.sample(
+        n=min(max_recs, len(distances_aug.index)), random_state=42
+    )
+    distances = pd.concat([distances_original, distances_aug])
+    del distances_original
+    del distances_aug
+
+    # merge anchor_id
+    pairs = pd.merge(
+        distances, sub_recs, how="inner", left_on="A", right_on="individual_id"
+    )
+    pairs = pairs.drop(columns=["A"])
+    sub_recs = sub_recs.drop(columns=["gene_id", "genus"])
+    # merge complement_id
+    pairs = pd.merge(
+        pairs,
+        sub_recs,
+        how="inner",
+        left_on="B",
+        right_on="individual_id",
+        suffixes=("_anchor", "_complement"),
+    )
+    # pruning
+    pairs = pairs.drop(columns=["B"])
+    pairs.rename(
+        columns={
+            "val": "distance",
+            "individual_id_anchor": "anchor_id",
+            "individual_id_complement": "complement_id",
+        },
+        inplace=True,
+    )
+    pairs = filter_basics(pairs)
+    return pairs
 
 
 def filter_basics(recs: pd.DataFrame) -> pd.DataFrame:
@@ -173,15 +169,13 @@ def filter_basics(recs: pd.DataFrame) -> pd.DataFrame:
         recs: Dataframe with samples to be processed
 
     Returns:
-    :return: A filtered dataframe
+        A filtered dataframe
     """
-    # duplicate combinations (before gap removal) -- we don't want to unknowingly train or eval some combinations more often than others
-    recs["combined_seq"] = list(
-        map("".join, np.sort(recs[["seq_anchor", "seq_complement"]]))
-    )
-    recs.drop_duplicates(subset=["combined_seq"], inplace=True)
 
-    # same-sequence combinations (after gap removal) -- nothing to be done for model
+    """
+    same-sequence combinations (after gap removal) -- 
+    nothing to be done for model
+    """
     recs["seq_anchor_short"] = recs["seq_anchor"].str.replace(
         r"-|\?|N|n", "", regex=True
     )
@@ -189,16 +183,21 @@ def filter_basics(recs: pd.DataFrame) -> pd.DataFrame:
         r"-|\?|N|n", "", regex=True
     )
     recs = recs[recs["seq_anchor_short"] != recs["seq_complement_short"]].copy()
-    recs.drop(
-        columns=["combined_seq", "seq_anchor_short", "seq_complement_short"],
-        inplace=True,
+    recs.drop(columns=["seq_anchor_short", "seq_complement_short"], inplace=True)
+
+    """
+    duplicate combinations (before gap removal) -- 
+    we don't want to unknowingly train or eval some combinations more often than others
+    """
+    recs["combined_seq"] = list(
+        map("".join, np.sort(recs[["seq_anchor", "seq_complement"]]))
     )
+    recs = recs.drop_duplicates(subset=["combined_seq"])
+    recs.drop(columns=["combined_seq"], inplace=True)
     return recs
 
 
-def create_genus_df(
-    genus: str, data_dir: str, raw_files_dir: str, species_info_dir: str
-) -> pd.DataFrame:
+def create_genus_df(genus: str, data_dir: str, raw_files_dir: str) -> pd.DataFrame:
     """
     Creates a dataframe with combined sequences with genetic distances and sequence information (locus, individual ID, etc.)
 
@@ -206,7 +205,6 @@ def create_genus_df(
         genus: The current genus to process
         data_dir: Parent folder where data is stored
         raw_files_dir: Directory where raw alignment files are stored
-        species_info_dir: Directory where files with species information are stored
 
     Returns:
         A dataframe with combined sequences, genetic distances and identifying information
@@ -220,27 +218,33 @@ def create_genus_df(
         )
 
     logger.info(f"Reading {genus} sequences...")
-    genus_recs = read_genus_alignments(raw_files_dir, species_info_dir, genus)
+    genus_recs = read_genus_alignments(raw_files_dir, genus)
 
     logger.info(f"Merging {genus} distances...")
     func = partial(merge_raxml, alignment_dir=raw_files_dir, genus=genus)
     groups = (g for _, g in genus_recs.groupby(["gene_id"], group_keys=False))
-
+    
     with mp.Pool(processes=4) as pool:
         genus_recs = list(
             tqdm(pool.imap_unordered(func, groups, chunksize=10), total=len(genus_recs["gene_id"].unique()))
         )
     genus_recs = pd.concat(genus_recs)
 
-    logger.info(
-        f"Basic filtering (i.e. removal of same-sequence combinations and duplicate sequence combinations) for {genus}..."
-    )
-    genus_recs = filter_basics(genus_recs)
-
     Path(f"{data_dir}/{genus}").mkdir(parents=True, exist_ok=True)
     logger.info(
         f"{genus}_unfiltered_raw_distances.csv has {len(genus_recs.index)} samples..."
     )
+
+    logger.info(f"Randomly choosing 1.5M records from {genus}")
+    genus_recs_original = genus_recs[~genus_recs["aug"]]
+    genus_recs_aug = genus_recs[genus_recs["aug"]]
+    max_recs = 1_500_000 - len(genus_recs_original.index)
+    genus_recs_aug = genus_recs_aug.sample(
+        n=min(max_recs, len(genus_recs_aug.index)), random_state=42
+    )
+    genus_recs = pd.concat([genus_recs_original, genus_recs_aug])
+    del genus_recs_original
+    del genus_recs_aug
     genus_recs.to_csv(
         f"{data_dir}/{genus}/{genus}_unfiltered_raw_distances.csv",
         header=True,
