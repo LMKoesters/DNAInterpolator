@@ -1,0 +1,8 @@
+interpolation_out
+src/1_interpolation/test_interpolation.sh
+src/1_interpolation/*.log
+examples
+.idea
+data/imbalanced_interpolation
+data/no_interpolation/raw_sorted_files
+*/__pycache__
