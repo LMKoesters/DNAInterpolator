@@ -1,0 +1,96 @@
+individual_id,species,country
+PALA001_TACTCCAG.FANT,Palaquium_gutta,Singapore (SBG)
+PALA002_AGTGACCT.FANT,Palaquium_gutta,Singapore (SBGrainforest)
+PALA003_AGCCTATC.FANT,Palaquium_gutta,Singapore (BTNR)
+PALA004_TCATCTCC.FANT,Palaquium_gutta,Singapore (BTNR)
+PALA005_CCAGTATC.FANT,Palaquium_sp,Borneo_Sarawak
+PALA005_GGCAAGTT.FANT,Palaquium_sp,Borneo_Sarawak
+PALA006_AGCTACCA.FANT,Palaquium_hexandrum,Singapore (Seletar)
+PALA006_TTGCGAGA.FANT,Palaquium_hexandrum,Singapore (Seletar)
+PALA007_GAACGAAG.FANT,Palaquium_hexandrum,Singapore (NSSF)
+PALA008_CGAATTGC.FANT,Palaquium_hexandrum,Singapore (NSSF)
+PALA009_CCACAACA.FANT,Palaquium_hexandrum,Singapore (NSSF)
+PALA010_TTACCGAC.FANT,Palaquium_hexandrum,Singapore (NSSF)
+PALA011_TCGTCTGA.FANT,Palaquium_impressinervium,Singapore (BTNR)
+PALA012_TTCCAGGT.FANT,Palaquium_impressinervium,Singapore (BTNR)
+PALA013_TACGGTCT.FANT,Palaquium_impressinervium,Singapore (BTNR)
+PALA014_AAGACCGT.FANT,Palaquium_microphyllum,Singapore (BTNR)
+PALA015_CAGGTTCA.FANT,Palaquium_impressinervium,Singapore (BTNR)
+PALA016_TAGGAGCT.FANT,Palaquium_impressinervium,Singapore (BTNR)
+PALA017_GGAAGAGA.FANT,Palaquium_impressinervium,Singapore (BTNR)
+PALA018_TCGGATTC.FANT,Palaquium_impressinervium,Singapore (BTNR)
+PALA019_CTGTACCA.FANT,Palaquium_impressinervium,Singapore (BTNR)
+PALA020_GAGAGTAC.FANT,Palaquium_impressinervium,Singapore (BTNR)
+PALA021_TCTACGCA.FANT,Palaquium_microphyllum,Singapore (MacRitchie)
+PALA022_GCAATTCC.FANT,Palaquium_microphyllum,Singapore (BTNR)
+PALA023_CTCAGAAG.FANT,Palaquium_microphyllum,Singapore (Chestnut)
+PALA024_GTCCTAAG.FANT,Palaquium_microphyllum,Singapore (Mandai)
+PALA025_GCGTTAGA.FANT,Palaquium_microphyllum,Singapore (Chestnut)
+PALA026_CAAGGTAC.FANT,Palaquium_microphyllum,Singapore (BTNR)
+PALA026_CTCGACTT.FANT,Palaquium_microphyllum,Singapore (BTNR)
+PALA027_AGACCTTG.FANT,Palaquium_microphyllum,Singapore (BTNR)
+PALA028_GTCGTTAC.FANT,Palaquium_microphyllum,Singapore (BTNR)
+PALA029_GTAACCGA.FANT,Palaquium_microphyllum,Singapore (NSSF)
+PALA029_GTACACCT.FANT,Palaquium_microphyllum,Singapore (NSSF)
+PALA030_CCAAGGTT.FANT,Palaquium_microphyllum,Borneo_Sabah
+PALA030_GAATCCGT.FANT,Palaquium_microphyllum,Borneo_Sabah
+PALA031_CATGAGCA.FANT,Palaquium_obovatum,Singapore (Lazarus)
+PALA032_CTTAGGAC.FANT,Palaquium_obovatum,Singapore (NSSF)
+PALA033_ATCTGACC.FANT,Palaquium_obovatum,Singapore (Sentosa)
+PALA034_GAACGGTT.FANT,Palaquium_obovatum,Singapore (P.Pawai)
+PALA034_TCCTCATG.FANT,Palaquium_obovatum,Singapore (P.Pawai)
+PALA035_AGGATAGC.FANT,Palaquium_obovatum,Singapore (P.Ubin)
+PALA035_CCAGTTGA.FANT,Palaquium_obovatum,Singapore (P.Ubin)
+PALA036_GGAGGAAT.FANT,Palaquium_obovatum,Singapore (Mandai)
+PALA036_GTCATCGT.FANT,Palaquium_obovatum,Singapore (Mandai)
+PALA037_GACGTCAT.FANT,Palaquium_obovatum,Singapore (BTNR)
+PALA038_CCGCTTAA.FANT,Palaquium_obovatum,Singapore (BTNR)
+PALA039_GACGAACT.FANT,Palaquium_obovatum,Singapore (BTNR)
+PALA040_TCCACGTT.FANT,Palaquium_obovatum,Singapore (St.Johns)
+PALA041_AACCAGAG.FANT,Palaquium_obovatum,Singapore (NSSF)
+PALA042_CAATGCGA.FANT,Palaquium_obovatum,Malaysia_Johore
+PALA042_GTCAGTCA.FANT,Palaquium_obovatum,Malaysia_Johore
+PALA043_CCTTCCAT.FANT,Palaquium_oxleyanum,Singapore (MacRitchie)
+PALA044_AGGAACAC.FANT,Palaquium_oxleyanum,Singapore (Mandai)
+PALA044_GGTTGAAC.FANT,Palaquium_oxleyanum,Singapore (Mandai)
+PALA045_CTTACAGC.FANT,Palaquium_oxleyanum,Singapore (BTNR)
+PALA046_CTTCGGTT.FANT,Palaquium_oxleyanum,Singapore (BTNR)
+PALA046_TACCTGCA.FANT,Palaquium_oxleyanum,Singapore (BTNR)
+PALA047_AGACGCTA.FANT,Palaquium_oxleyanum,Singapore (BTNR)
+PALA047_CGGCATTA.FANT,Palaquium_oxleyanum,Singapore (BTNR)
+PALA048_CAACACAG.FANT,Palaquium_rostratum,Singapore (NSSF)
+PALA049_CACGCAAT.FANT,Palaquium_rostratum,Singapore (MacRitchie)
+PALA049_GTACCACA.FANT,Palaquium_rostratum,Singapore (MacRitchie)
+PALA050_CGAATACG.FANT,Palaquium_rostratum,Singapore (MacRitchie)
+PALA051_GGAATGTC.FANT,Palaquium_rostratum,Singapore (BTNR)
+PALA051_GTCCTTGA.FANT,Palaquium_rostratum,Singapore (BTNR)
+PALA052_CAGTGCTT.FANT,Palaquium_rostratum,Singapore (Mandai)
+PALA052_TGGTGAAG.FANT,Palaquium_rostratum,Singapore (Mandai)
+PALA053_TCCATTGC.FANT,Palaquium_rostratum,Singapore (Mandai)
+PALA054_GTCGATTG.FANT,Palaquium_rostratum,Singapore (NSSF)
+PALA055_ATAACGCC.FANT,Palaquium_rostratum,Singapore (NSSF)
+PALA056_GCCTTAAC.FANT,Palaquium_rostratum,Singapore (NSSF)
+PALA057_GGTATAGG.FANT,Palaquium_xanthochymum,Singapore (NSSF)
+PALA058_TCTAGGAG.FANT,Palaquium_xanthochymum,Singapore (Seletar)
+PALA059_TGCGTAAC.FANT,Palaquium_xanthochymum,Singapore (NSSF)
+PALA060_CTTGCTAG.FANT,Palaquium_xanthochymum,Singapore (NSSF)
+PALA060_GGACATCA.FANT,Palaquium_xanthochymum,Singapore (NSSF)
+PALA061_AGCGAGAT.FANT,Palaquium_gutta,Malaysia_Pasoh
+PALA062_TATGGCAC.FANT,Palaquium_hexandrum,Malaysia_Kedah
+PALA063_GAATCACC.FANT,Palaquium_hexandrum,Malaysia_Kedah
+PALA064_GGTGTACA.FANT,Palaquium_hexandrum,Borneo_Sarawak
+PALA064_GTAAGGTG.FANT,Palaquium_hexandrum,Borneo_Sarawak
+PALA065_CGAGAGAA.FANT,Palaquium_microphyllum,Malaysia_Johore
+PALA066_CGCAACTA.FANT,Palaquium_oxleyanum,Malaysia_Perak
+PALA067_CACAGACT.FANT,Palaquium_oxleyanum,Malaysia_Terengganu
+PALA068_TGGAAGCA.FANT,Palaquium_oxleyanum,Borneo_Sabah
+PALA069_CAATAGCC.FANT,Palaquium_rostratum,Malaysia_Kedah
+PALA070_CAGCATAC.FANT,Palaquium_xanthochymum,Malaysia_Johore
+PALA071_CGTATCTC.FANT,Palaquium_xanthochymum,Malaysia_Johore
+PALA072_TTACGTGC.FANT,Palaquium_rostratum,Singapore (NSSF)
+PALA073_AGCTAAGC.FANT,Palaquium_xanthochymum,Singapore (NSSF)
+PALA074_AAGACACC.FANT,Palaquium_xanthochymum,Singapore (NSSF)
+PALA075_CAACTCCA.FANT,Palaquium_xanthochymum,Singapore (NSSF)
+PALA076_GATCTTGC.FANT,Palaquium_rostratum,Singapore (NSSF)
+PALA077_CTCGAACA.FANT,Palaquium_rostratum,Singapore (NSSF)
+PALA077_CTTCACTG.FANT,Palaquium_rostratum,Singapore (NSSF)
