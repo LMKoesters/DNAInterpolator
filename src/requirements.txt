@@ -1,0 +1,11 @@
+einops==0.8.2
+mosaicml==0.32.1
+mosaicml-cli==0.7.5
+numpy==2.2.6
+omegaconf==2.3.0
+pyarrow==20.0.0
+torch==2.7.0
+torch-optimizer==0.3.0
+torchmetrics==1.7.4
+torchvision==0.22.0
+transformers==4.49.0

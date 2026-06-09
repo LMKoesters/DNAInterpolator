@@ -1,0 +1,17 @@
+name: dna_interpolation_test
+channels:
+  - conda-forge
+  - defaults
+  - bioconda
+dependencies:
+  - python=3.13
+  - biopython
+  - ipykernel
+  - numpy
+  - pandas
+  - raxml
+  - scipy
+  - tqdm
+  - pip
+  - pip:
+      - -r requirements.txt
