@@ -4,5 +4,4 @@ src/1_interpolation/*.log
 examples
 .idea
 data/imbalanced_interpolation
-data/no_interpolation/raw_sorted_files
-*/__pycache__
+data/no_interpolation
