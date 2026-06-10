@@ -1,0 +1,117 @@
+#################
+# This template was taken from DNABERT-2 (https://github.com/MAGICS-LAB/DNABERT_2)
+# We modified it to fit our code
+#################
+interpolation: 'imbalanced_interpolation'
+data_local: /SOME_PATH/data/${interpolation}
+data_remote: # If blank, files must be present in data_local
+
+max_seq_len: 1276
+tokenizer_name: zhihan1996/DNABERT-2-117M
+feat_dim: 64
+
+genera_to_test: ['Dactylorhiza', 'Lomatium', 'Palaquium', 'Pterocarpus']
+
+# Run Name
+run_name: ${interpolation}
+
+# Model
+model:
+  name: mosaic_bert
+  pretrained_model_name: ${tokenizer_name}
+  tokenizer_name: ${tokenizer_name}
+  tokenizer_config:
+      stride: 64
+      return_overflowing_tokens: true
+  # Mosaic BERT 'base' generally uses the default architecture values for from the Hugging Face BertConfig object
+  # Note: if using the pretrained_checkpoint argument to create a model from an existing checkpoint, make sure
+  # the model_config settings match the architecture of the existing model
+  model_config:
+    num_attention_heads: 12 # bert-base default
+    num_hidden_layers: 12 # bert-base default
+    attention_probs_dropout_prob: 0.0 # This must be 0 for Flash Attention with triton to work
+
+# Dataloaders
+train_loader:
+  dataset:
+    local: ${data_local}
+    remote: ${data_remote}
+    split: train
+    tokenizer_name: ${tokenizer_name}
+    max_seq_len: ${max_seq_len}
+    shuffle: true
+  drop_last: true
+  num_workers: 32
+
+eval_loader:
+  dataset:
+    local: ${data_local}
+    remote: ${data_remote}
+    split: val
+    tokenizer_name: ${tokenizer_name}
+    max_seq_len: ${max_seq_len}
+    shuffle: false
+  drop_last: false
+  num_workers: 32
+
+# Optimization
+scheduler:
+  name: linear_decay_with_warmup
+  t_warmup: 0.06dur # Warmup to the full LR for 6% of the training duration
+  alpha_f: 0 # Linearly decay to 0 the full LR by the end of the training duration
+
+optimizer:
+  name: decoupled_adamw
+  lr: 1.6e-5 # Peak learning rate
+  betas:
+  - 0.9
+  - 0.98
+  eps: 1.0e-06
+  weight_decay: 1.0e-5 # Amount of weight decay regularization
+
+algorithms:
+  alibi:
+      max_sequence_length: ${max_seq_len}
+      train_sequence_length_scaling: 1
+  low_precision_layernorm: {}
+
+max_duration: 3ep # =3ep of interpolated data
+eval_interval: 1ep # =1ep of interpolated data
+global_train_batch_size: 256
+
+# System
+seed: 42
+device_eval_batch_size: 64
+device_train_microbatch_size: 10
+precision: amp_bf16
+dist_timeout: 300.0
+
+# Logging
+progress_bar: false
+log_to_console: false
+console_log_interval: 5ba
+python_log_level: INFO
+
+callbacks:
+  lr_monitor: {}
+  runtime_estimator: {}
+  checkpoint_saver_contrastive:
+      save_path: /SOME_PATH/results/${run_name}/best
+  epoch_saving:
+      save_path: /SOME_PATH/results/${run_name}/best
+  empty_cache_eval: {}
+
+# (Optional) W&B logging
+loggers:
+    filelogger:
+        filename: logs/training_log_${run_name}.txt
+        buffer_size: 1
+
+# (Optional) Checkpoint to local filesystem or remote object store
+save_interval: 2000ba
+save_num_checkpoints_to_keep: 5
+save_folder: /SOME_PATH/results/${run_name}/ckpt
+
+save_folder_parent: /SOME_PATH/results/${run_name}
+# ckpt_load_path: /SOME_PATH/results/${run_name}/ckpt/latest-rank0.pt
+
